@@ -57,8 +57,6 @@ public class Bot extends TelegramLongPollingBot {
 
             connection.setRequestMethod("GET");
             connection.setUseCaches(false);
-//            connection.setConnectTimeout(1000);
-//            connection.setReadTimeout(1000);
 
             connection.connect();
 
@@ -155,7 +153,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "5216972541:AAHp0kqssBOvZhOQr5VjpgCqt5-v-VfNoEA";
+        return data.botToken;
     }
 
 }
