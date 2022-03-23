@@ -11,13 +11,14 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Iterator;
 
 public class Bot extends TelegramLongPollingBot {
+
+    Data data = new Data();
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -27,20 +28,27 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (messageText.contains("/start")) {
                 String stickerId = "CAACAgIAAxkBAAEEO2xiOWxKyxk2V8O5bPWqOf_n-C_hgQACNhYAAlxA2EvbRm7S3ZV6DSME";
-                String text = "Привет! Я не просто бот, а испанский словарь, готовый помочь тебе в трудную минуту!";
+                String text = "Привет! Я не просто бот, а испанский словарь, готовый помочь тебе в трудную минуту!\n" +
+                        "\nПросто отправь мне любое слово и я переведу его!";
                 sendSticker(update, chatId, stickerId);
                 sendMessage(update, chatId, text);
             } else {
                 String text = "Вот, что мне удалось найти: ";
                 sendMessage(update, chatId, text);
-                sendTranslation(update, chatId, messageText);
+                try {
+                    sendTranslation(update, chatId, messageText);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    private void sendTranslation(Update update, String chatId, String text) {
-        String api = "N0rZQgmnB7";
-        String request = "http://api.diccionario.ru/?key=[" + api + "]&q=" + text;
+    private void sendTranslation(Update update, String chatId, String text) throws IOException {
+        String api = data.api;
+        String dict = "join_es_ru";
+
+        String request = "http://api.diccionario.ru/?key=[" + api + "]&q=" + text; //  + "&dict=" + dict
 
         HttpURLConnection connection = null;
 
@@ -49,8 +57,8 @@ public class Bot extends TelegramLongPollingBot {
 
             connection.setRequestMethod("GET");
             connection.setUseCaches(false);
-            connection.setConnectTimeout(500);
-            connection.setReadTimeout(500);
+//            connection.setConnectTimeout(1000);
+//            connection.setReadTimeout(1000);
 
             connection.connect();
 
@@ -70,19 +78,16 @@ public class Bot extends TelegramLongPollingBot {
                     String r = (String) innerObject.get("r");
 
                     if ((!l.contains("<")) && (!r.contains("<"))) {
-                        answer.append("- ");
                         answer.append(innerObject.get("l"));
                         answer.append(" - ");
                         answer.append(innerObject.get("r"));
                         answer.append("\n");
                         answer.append("\n");
                     } else if (!l.contains("<")) {
-                        answer.append("- ");
                         answer.append(innerObject.get("l"));
                         answer.append("\n");
                         answer.append("\n");
                     } else if (!r.contains("<")) {
-                        answer.append("- ");
                         answer.append(innerObject.get("r"));
                         answer.append("\n");
                         answer.append("\n");
@@ -93,8 +98,7 @@ public class Bot extends TelegramLongPollingBot {
             } else {
                 System.out.println("fail:" + connection.getResponseCode() + ", " + connection.getResponseMessage());
             }
-        } catch (
-                Throwable cause) {
+        } catch (Throwable cause) {
             cause.printStackTrace();
         } finally {
             if (connection != null) {
