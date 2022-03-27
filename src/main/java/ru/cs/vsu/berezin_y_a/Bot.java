@@ -82,10 +82,12 @@ public class Bot extends TelegramLongPollingBot {
                         answer.append("\n");
                         answer.append("\n");
                     } else if (!l.contains("<")) {
+//                        System.out.println(innerObject.get("r"));
                         answer.append(innerObject.get("l"));
                         answer.append("\n");
                         answer.append("\n");
                     } else if (!r.contains("<")) {
+//                        System.out.println(innerObject.get("l"));
                         answer.append(innerObject.get("r"));
                         answer.append("\n");
                         answer.append("\n");
