@@ -20,6 +20,9 @@ public class Bot extends TelegramLongPollingBot {
 
     Data data = new Data();
 
+    public Bot() throws IOException {
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         String chatId = update.getMessage().getChatId().toString();
